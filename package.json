@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@reach/router": "1.2.1",
+    "pe": "0.0.1",
     "pet": "1.0.1",
     "petfinder-client": "0.0.3",
     "react": "16.5.2",

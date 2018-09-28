@@ -1,6 +1,8 @@
 import React from 'react';
 import pf from 'petfinder-client';
+import { Consumer } from './SearchContext';
 import Pet from './Pet';
+import SearchBox from './SearchBox';
 
 const petfinder = pf({
   key: process.env.API_KEY,
@@ -17,26 +19,39 @@ class Results extends React.Component {
   }
 
   componentDidMount() {
-    petfinder.pet.find({ output: 'full', location: 'Seattle, WA' }).then(data => {
-      let pets;
-
-      if (data.petfinder.pets && data.petfinder.pets.pet) {
-        if (Array.isArray(data.petfinder.pets.pet)) {
-          pets = data.petfinder.pets.pet;
-        } else {
-          pets = [data.petfinder.pets.pet];
-        }
-      } else {
-        pets = [];
-      }
-      this.setState({ pets });
-    });
+    this.search();
   }
+
+  search = () => {
+    const { searchParams } = this.props;
+    petfinder.pet
+      .find({
+        output: 'full',
+        location: searchParams.location,
+        animal: searchParams.animal,
+        breed: searchParams.breed,
+      })
+      .then(data => {
+        let pets;
+
+        if (data.petfinder.pets && data.petfinder.pets.pet) {
+          if (Array.isArray(data.petfinder.pets.pet)) {
+            pets = data.petfinder.pets.pet;
+          } else {
+            pets = [data.petfinder.pets.pet];
+          }
+        } else {
+          pets = [];
+        }
+        this.setState({ pets });
+      });
+  };
 
   render() {
     const { pets } = this.state;
     return (
       <div className="search">
+        <SearchBox search={this.search} />
         {pets.map(pet => {
           let breed;
           if (Array.isArray(pet.breeds.breed)) {
@@ -61,4 +76,6 @@ class Results extends React.Component {
   }
 }
 
-export default Results;
+export default function ResultsWithContext(props) {
+  return <Consumer>{context => <Results {...props} searchParams={context} />}</Consumer>;
+}
