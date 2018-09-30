@@ -1,0 +1,8 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`changeLocation action creator 1`] = `
+Object {
+  "payload": "Seattle, WA",
+  "type": "SET_LOCATION",
+}
+`;
