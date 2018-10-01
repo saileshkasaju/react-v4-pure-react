@@ -1,6 +1,10 @@
 import React, { Component } from 'react';
 import { ANIMALS } from 'petfinder-client';
-import { Consumer } from './SearchContext';
+import { connect } from 'react-redux';
+import getBreeds from './actionCreators/getBreeds';
+import changeBreed from './actionCreators/changeBreed';
+import changeAnimal from './actionCreators/changeAnimal';
+import changeLocation from './actionCreators/changeLocation';
 
 class SearchBox extends Component {
   handleFormSubmit = e => {
@@ -8,72 +12,89 @@ class SearchBox extends Component {
     this.props.search();
   };
   render() {
+    const {
+      breeds,
+      breed,
+      animal,
+      location,
+      handleAnimalChange,
+      handleBreedChange,
+      handleLocationChange,
+    } = this.props;
     return (
-      <Consumer>
-        {context => {
-          const {
-            breeds,
-            breed,
-            location,
-            animal,
-            handleLocationChange,
-            handleAnimalChange,
-            handleBreedChange,
-          } = context;
-          return (
-            <div className="search-params">
-              <form onSubmit={this.handleFormSubmit}>
-                <label htmlFor="location">
-                  Location
-                  <input
-                    id="location"
-                    value={location}
-                    placeholder="Location"
-                    name="location"
-                    onChange={handleLocationChange}
-                  />
-                </label>
-                <label htmlFor="animal">
-                  Animal
-                  <select
-                    id="animal"
-                    value={animal}
-                    onBlur={handleAnimalChange}
-                    onChange={handleAnimalChange}
-                  >
-                    <option value="">All breeds</option>
-                    {ANIMALS.map(animal => (
-                      <option key={animal} value={animal}>
-                        {animal}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <label htmlFor="breed">
-                  Breed
-                  <select
-                    id="breed"
-                    value={breed}
-                    onChange={handleBreedChange}
-                    onBlur={handleBreedChange}
-                    disabled={!breeds.length}
-                  >
-                    <option value="">All breeds</option>
-                    {breeds.map(eachBreed => (
-                      <option key={eachBreed} value={eachBreed}>
-                        {eachBreed}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <button>Submit</button>
-              </form>
-            </div>
-          );
-        }}
-      </Consumer>
+      <div className="search-params">
+        <form onSubmit={this.handleFormSubmit}>
+          <label htmlFor="location">
+            Location
+            <input
+              id="location"
+              value={location}
+              placeholder="Location"
+              name="location"
+              onChange={handleLocationChange}
+            />
+          </label>
+          <label htmlFor="animal">
+            Animal
+            <select
+              id="animal"
+              value={animal}
+              onBlur={handleAnimalChange}
+              onChange={handleAnimalChange}
+            >
+              <option value="">All breeds</option>
+              {ANIMALS.map(animal => (
+                <option key={animal} value={animal}>
+                  {animal}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label htmlFor="breed">
+            Breed
+            <select
+              id="breed"
+              value={breed}
+              onChange={handleBreedChange}
+              onBlur={handleBreedChange}
+              disabled={!breeds.length}
+            >
+              <option value="">All breeds</option>
+              {breeds.map(eachBreed => (
+                <option key={eachBreed} value={eachBreed}>
+                  {eachBreed}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button>Submit</button>
+        </form>
+      </div>
     );
   }
 }
 
-export default SearchBox;
+const mapStateToProps = ({ animal, breed, breeds, location }) => ({
+  animal,
+  breed,
+  breeds,
+  location,
+});
+
+const mapDispatchToProps = dispatch => ({
+  handleAnimalChange(event) {
+    dispatch(changeAnimal(event.target.value));
+    dispatch(getBreeds());
+  },
+  handleBreedChange(event) {
+    dispatch(changeBreed(event.target.value));
+  },
+  handleLocationChange(event) {
+    dispatch(changeLocation(event.target.value));
+  },
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(SearchBox);

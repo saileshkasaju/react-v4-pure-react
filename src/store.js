@@ -1,13 +1,13 @@
-import { createStore, compose, applyMiddleWare } from 'redux';
+import { createStore, compose, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducers from './reducers';
 
 const store = createStore(
   reducers,
   compose(
-    applyMiddleWare(thunk),
+    applyMiddleware(thunk),
     typeof window === 'object' && typeof window.devToolsExtention === 'undefined'
-      ? window.devToolsExtention()
+      ? window.devToolsExtension()
       : f => f,
   ),
 );
