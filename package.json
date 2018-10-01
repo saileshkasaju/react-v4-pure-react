@@ -43,10 +43,7 @@
   "dependencies": {
     "@reach/router": "1.2.1",
     "emotion": "9.2.10",
-    "pe": "0.0.1",
-    "pet": "1.0.1",
     "petfinder-client": "0.0.3",
-    "reac": "0.0.0",
     "react": "16.5.2",
     "react-dom": "16.5.2",
     "react-emotion": "9.2.10"
