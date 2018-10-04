@@ -1,26 +1,46 @@
-import React, { Component } from 'react';
-import pf from 'petfinder-client';
-import { navigate } from '@reach/router';
+import React from 'react';
+import pf, { PetResponse, PetMedia } from 'petfinder-client';
+import { navigate, RouteComponentProps } from '@reach/router';
 import Carousel from './Carousel';
 import Modal from './Modal';
+
+if (!process.env.API_KEY || !process.env.API_SECRET) {
+  throw new Error('no Api key');
+}
 
 const petfinder = pf({
   key: process.env.API_KEY,
   secret: process.env.API_SECRET,
 });
 
-class Details extends Component {
-  state = { loading: true, showModal: false };
-  componentDidMount() {
+class Details extends React.Component<RouteComponentProps<{ id: string }>> {
+  public state = {
+    loading: true,
+    showModal: false,
+    name: '',
+    animal: '',
+    location: '',
+    description: '',
+    media: {} as PetMedia,
+    breed: '',
+  };
+  public componentDidMount() {
+    if (!this.props.id) {
+      return;
+    }
     petfinder.pet
       .get({
         output: 'full',
         id: this.props.id,
       })
-      .then(data => {
+      .then((data: PetResponse) => {
+        if (!data.petfinder.pet) {
+          navigate('/');
+          return;
+        }
         const pet = data.petfinder.pet;
         let breed;
-        if (Array.isArray(data.petfinder.pet.breeds.breed)) {
+        if (Array.isArray(pet.breeds.breed)) {
           breed = pet.breeds.breed.join(', ');
         } else {
           breed = pet.breeds.breed;
@@ -39,8 +59,8 @@ class Details extends Component {
         navigate('/');
       });
   }
-  toggleModal = () => this.setState(state => ({ showModal: !state.showModal }));
-  render() {
+  public toggleModal = () => this.setState({ showModal: !this.state.showModal });
+  public render() {
     if (this.state.loading) {
       return <h1>loading ...</h1>;
     }
